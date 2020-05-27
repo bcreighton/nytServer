@@ -1,9 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const app = express();
 
 app.use(morgan('common')); // let's see what common format looks like
+app.use(cors());
 
 const books = require('./books-data.js');
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import './App.css';
+import Book from './components/book/Book'
 
 class App extends Component {
-  stete = {
+  state = {
     books: [],
     search: '',
     sort: '',
@@ -15,13 +15,55 @@ class App extends Component {
     })
   }
 
-  setSor(sort) {
+  setSort(sort) {
     this.setState({
       sort,
     })
   }
 
+  handleSubmit(e) {
+    e.preventDefault();
+
+    //construct URL with query string
+    const baseUrl = 'http://localhost:8000/books';
+    const params = [];
+
+    if (this.state.search) {
+      params.push(`search=${this.state.search}`);
+    }
+    if (this.state.sort) {
+      params.push(`sort=${this.state.sort}`);
+    }
+
+    const query = params.join('&');
+    const url = `${baseUrl}?${query}`;
+
+    fetch(url)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+      .then(data => {
+        this.setState({
+          books: data,
+          error: null //reset all errors
+        });
+      })
+      .catch(err => {
+        this.setState({
+          error: `Sorry, cound not get book at this time.`
+        });
+      })
+  }
+
   render() {
+    // map over all books
+    const books = this.state.books.map((book, i) => {
+      return <Book {...book} key={i} />
+    })
+
     return (
       <main className="App">
         <h1>NYT Best Sellers</h1>
@@ -33,7 +75,7 @@ class App extends Component {
               id='search'
               name='search'
               value={this.state.search}
-              onChcnage={e => this.setSearch(e.target.value)}
+              onChange={e => this.setSearch(e.target.value)}
             />
 
             <label htmlFor='sort'>Sort: </label>
