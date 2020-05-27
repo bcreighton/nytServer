@@ -18,3 +18,5 @@ function Book(props) {
     </div>
   )
 }
+
+export default Book;
